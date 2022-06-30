@@ -112,7 +112,6 @@ def shortest_path(source, target):
                 new_node = Node(person, search, movie)
                 if not (person in visited or frontier.contains_state(person)):
                     frontier.add(new_node)
-            print(frontier.frontier)
     
     return None
 
