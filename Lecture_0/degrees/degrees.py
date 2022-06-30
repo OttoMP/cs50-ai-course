@@ -1,5 +1,6 @@
 import csv
 import sys
+import time
 
 from util import Node, StackFrontier, QueueFrontier
 
@@ -92,12 +93,13 @@ def shortest_path(source, target):
     If no possible path, returns None.
     """
     frontier = QueueFrontier()
+    visited = set()
     initial_node = Node(source, None, None)
-
     frontier.add(initial_node)
 
     while not frontier.empty():
         search = frontier.remove()
+        visited.add(search.state)
         if search.state == target:
             path = []
             while search != initial_node:
@@ -108,8 +110,9 @@ def shortest_path(source, target):
         else:
             for movie, person in neighbors_for_person(search.state):
                 new_node = Node(person, search, movie)
-                if not frontier.contains_state(new_node):
+                if not (person in visited or frontier.contains_state(person)):
                     frontier.add(new_node)
+            print(frontier.frontier)
     
     return None
 
