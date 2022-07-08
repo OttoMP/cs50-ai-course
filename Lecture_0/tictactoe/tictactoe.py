@@ -24,7 +24,11 @@ def player(board):
     """
     Returns player who has the next turn on a board.
     """
-    if sum([place != EMPTY for place in list(board)]) % 2 == 0:
+    list_board = []
+    for row in board:
+        list_board = list_board + row
+
+    if sum([place != EMPTY for place in list_board]) % 2 == 0:
         player = X
     else:
         player = O
@@ -134,8 +138,8 @@ def utility(board):
 def max_value(board):
     if terminal(board):
         return utility(board)
-    v = -math.inf
 
+    v = -math.inf
     for action in actions(board):
         v = max(v, min_value(result(board, action)))
 
@@ -144,8 +148,8 @@ def max_value(board):
 def min_value(board):
     if terminal(board):
         return utility(board)
-    v = math.inf
 
+    v = math.inf
     for action in actions(board):
         v = min(v, max_value(result(board, action)))
 
@@ -161,14 +165,14 @@ def minimax(board):
     if local_player == X:
         v = -math.inf
         for action in actions(board):
-            maximal = max_value(result(board, action))
+            maximal = min_value(result(board, action))
             if maximal > v:
                 optimal_action = action
                 v = maximal
     elif local_player == O:
         v = math.inf
         for action in actions(board):
-            minimal = min_value(result(board, action))
+            minimal = max_value(result(board, action))
             if minimal < v:
                 optimal_action = action
                 v = minimal
