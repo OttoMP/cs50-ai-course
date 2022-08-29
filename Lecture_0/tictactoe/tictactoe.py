@@ -24,10 +24,7 @@ def player(board):
     """
     Returns player who has the next turn on a board.
     """
-    list_board = []
-    for row in board:
-        list_board = list_board + row
-
+    list_board = [j for row in board for j in row]
     if sum([place != EMPTY for place in list_board]) % 2 == 0:
         player = X
     else:
@@ -88,15 +85,8 @@ def winner(board):
                 return winner
 
     # Check diagonals
-    main_diagonal = set()
-    main_diagonal.add(board[0][0])
-    main_diagonal.add(board[1][1])
-    main_diagonal.add(board[2][2])
-    off_diagonal = set()
-    off_diagonal.add(board[0][2])
-    off_diagonal.add(board[1][1])
-    off_diagonal.add(board[2][0])
-
+    main_diagonal = {board[0][0], board[1][1], board[2][2]}
+    off_diagonal = {board[0][2], board[1][1], board[2][0]}
     for diagonal in [main_diagonal, off_diagonal]:
         if len(diagonal) <= 1:
             winner = diagonal.pop()
@@ -110,9 +100,7 @@ def terminal(board):
     """
     Returns True if game is over, False otherwise.
     """
-    list_board = []
-    for row in board:
-        list_board = list_board + row
+    list_board = [j for row in board for j in row]
 
     if list_board.count(EMPTY) == 0:
         return True
@@ -145,6 +133,7 @@ def max_value(board):
 
     return v
 
+
 def min_value(board):
     if terminal(board):
         return utility(board)
@@ -154,6 +143,7 @@ def min_value(board):
         v = min(v, max_value(result(board, action)))
 
     return v
+
 
 def minimax(board):
     """
