@@ -100,15 +100,15 @@ def shortest_path(source, target):
     while not frontier.empty():
         search = frontier.remove()
         visited.add(search.state)
-        if search.state == target:
-            path = []
-            while search != initial_node:
-                path = [(search.action, search.state), *path]
-                search = search.parent
+        for movie, person in neighbors_for_person(search.state):
+            if person == target:
+                path = [(movie, person)]
+                while search != initial_node:
+                    path = [(search.action, search.state), *path]
+                    search = search.parent
 
-            return path
-        else:
-            for movie, person in neighbors_for_person(search.state):
+                return path
+            else:
                 new_node = Node(person, search, movie)
                 if not (person in visited or frontier.contains_state(person)):
                     frontier.add(new_node)
