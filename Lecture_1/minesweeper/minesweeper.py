@@ -1,5 +1,6 @@
 import itertools
 import random
+from turtle import width
 
 
 class Minesweeper():
@@ -193,17 +194,32 @@ class MinesweeperAI():
         """
         self.moves_made.add(cell)
         self.safes.add(cell)
-        all_neighbours = [cell,
-                          (cell[0]+1, cell[1]+1),
-                          (cell[0]+1, cell[1]),
-                          (cell[0]+1, cell[1]-1),
-                          (cell[0],   cell[1]-1),
-                          (cell[0],   cell[1]+1),
-                          (cell[0]-1, cell[1]+1),
-                          (cell[0]-1, cell[1]),
-                          (cell[0]-1, cell[1]-1)
-                         ]
+        all_neighbours = [cell]
+        # Check borders
+        if (cell[0] - 1) >= 0:
+            all_neighbours.append((cell[0]-1, cell[1]))
+        if (cell[1] - 1) >= 0:
+            all_neighbours.append((cell[0],   cell[1]-1))
+        if (cell[0] + 1) < self.height:
+            all_neighbours.append((cell[0]+1, cell[1]))
+        if (cell[1] + 1) < self.width:
+            all_neighbours.append((cell[0],   cell[1]+1))
+        if (cell[0] - 1) >= 0 and (cell[1] - 1) >= 0:
+            all_neighbours.append((cell[0]-1, cell[1]-1))
+        if (cell[0] + 1) < self.height and (cell[1] + 1) < self.width:
+            all_neighbours.append((cell[0]+1, cell[1]+1))
+        if (cell[0] + 1) < self.height and (cell[1] - 1) >= 0:
+            all_neighbours.append((cell[0]+1, cell[1]-1))
+        if (cell[0] - 1) >= 0 and (cell[1] + 1) < self.width:
+            all_neighbours.append((cell[0]-1, cell[1]+1))
+
+
         new_knowledge = Sentence(all_neighbours, count)
+        for mine in self.mines:
+            if mine in new_knowledge.cells:
+                new_knowledge.cells - {mine}
+                new_knowledge.count -= 1
+
         for sentence in self.knowledge:
             if sentence.cells <= new_knowledge.cells:
                 new_knowledge.cells -= sentence.cells
@@ -241,7 +257,10 @@ class MinesweeperAI():
         """
         possible_moves = self.safes - self.moves_made
         if len(possible_moves) > 0:
-            return random.sample(possible_moves, 1)[0]
+            print("Known safes", possible_moves)
+            safe_move = random.sample(possible_moves, 1)[0]
+            print(safe_move)
+            return safe_move
         else:
             return None
 
@@ -252,5 +271,9 @@ class MinesweeperAI():
             1) have not already been chosen, and
             2) are not known to be mines
         """
-
-        return random.sample(set(itertools.product(range(self.width), range(self.height))) - self.mines - self.moves_made, 1)[0]
+        print("Known Mines", self.mines)
+        for i in range(len(self.knowledge)):
+            print(self.knowledge[i])
+        random_move = random.sample(set(itertools.product(range(self.width), range(self.height))) - self.mines - self.moves_made, 1)[0]
+        print(random_move)
+        return  random_move
