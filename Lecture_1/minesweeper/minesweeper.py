@@ -254,13 +254,7 @@ class MinesweeperAI():
         """
         possible_moves = self.safes - self.moves_made
         if len(possible_moves) > 0:
-            print("Known safes", possible_moves)
-            print("Knowledge")
-            for i in range(len(self.knowledge)):
-                print(self.knowledge[i])
-            safe_move = random.sample(possible_moves, 1)[0]
-            print(safe_move)
-            return safe_move
+            return random.sample(possible_moves, 1)[0]
         else:
             return None
 
@@ -271,9 +265,4 @@ class MinesweeperAI():
             1) have not already been chosen, and
             2) are not known to be mines
         """
-        print("Known Mines", self.mines)
-        for i in range(len(self.knowledge)):
-            print(self.knowledge[i])
-        random_move = random.sample(set(itertools.product(range(self.width), range(self.height))) - self.mines - self.moves_made, 1)[0]
-        print(random_move)
-        return  random_move
+        return  random.sample(set(itertools.product(range(self.width), range(self.height))) - self.mines - self.moves_made, 1)[0]
