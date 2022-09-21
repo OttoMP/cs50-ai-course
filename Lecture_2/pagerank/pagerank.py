@@ -57,7 +57,14 @@ def transition_model(corpus, page, damping_factor):
     linked to by `page`. With probability `1 - damping_factor`, choose
     a link at random chosen from all pages in the corpus.
     """
-    raise NotImplementedError
+    out_links = corpus[page]
+    probability_distribution = dict()
+    for i in out_links:
+        probability_distribution[i] = damping_factor/len(out_links)
+    for p in corpus:
+        probability_distribution[p] = probability_distribution.get(p, 0) + (1-damping_factor)/len(corpus)
+
+    return probability_distribution
 
 
 def sample_pagerank(corpus, damping_factor, n):
