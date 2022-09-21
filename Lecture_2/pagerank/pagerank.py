@@ -92,6 +92,8 @@ def sample_pagerank(corpus, damping_factor, n):
         page = random.choices(population, weights=weights)[0]
         page_rank[page] = page_rank.get(page, 0) + 1
 
+    return page_rank
+
 
 def links(corpus, page):
     links = []
@@ -126,6 +128,8 @@ def iterate_pagerank(corpus, damping_factor):
             if abs(update[p]-page_rank[p]) >= 0.001:
                 changed = True
         page_rank = update
+
+    return page_rank
 
 
 if __name__ == "__main__":
