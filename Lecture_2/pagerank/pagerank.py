@@ -95,7 +95,7 @@ def sample_pagerank(corpus, damping_factor, n):
     return page_rank
 
 
-def links(corpus, page):
+def Links(corpus, page):
     links = []
     for key, value in corpus.items():
         if page in value:
@@ -123,7 +123,7 @@ def iterate_pagerank(corpus, damping_factor):
         it += 1
         update = deepcopy(page_rank)
         for p in update.keys():
-            links = links(corpus, p)
+            links = Links(corpus, p)
             update[p] = (1-damping_factor)/len(corpus) + damping_factor*(sum([page_rank[link]/len(corpus[link]) for link in links]))
             if abs(update[p]-page_rank[p]) >= 0.001:
                 changed = True
