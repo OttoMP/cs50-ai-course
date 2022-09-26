@@ -181,7 +181,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
             else:
                 gen_dad *= PROBS["mutation"]
 
-            prob *= gen_mom+gen_dad
+            prob *= gen_mom * (1-gen_dad) + (1-gen_mom) * gen_dad
 
             if c in have_trait:
                 prob *= PROBS["trait"][1][True]
