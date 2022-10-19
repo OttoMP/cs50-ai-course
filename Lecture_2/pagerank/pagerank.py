@@ -82,7 +82,9 @@ def sample_pagerank(corpus, damping_factor, n):
         page_rank[key] = 0
 
     page = random.choice(list(corpus.keys()))
-    for _ in range(n):
+    page_rank[page] = page_rank.get(page, 0) + 1
+
+    for _ in range(n-1):
         tm = transition_model(corpus, page, damping_factor)
         weights = []
         population = []
@@ -117,15 +119,22 @@ def iterate_pagerank(corpus, damping_factor):
         page_rank[key] = 1/len(corpus)
 
     changed = True
-    it = 0
     while changed:
         changed = False
-        it += 1
         update = deepcopy(page_rank)
         for p in update.keys():
             links = Links(corpus, p)
-            update[p] = (1-damping_factor)/len(corpus) + damping_factor*(sum([page_rank[link]/len(corpus[link]) for link in links]))
-            if abs(update[p]-page_rank[p]) >= 0.001:
+
+            link_weights = []
+            for i in links:
+                num_links = len(corpus[i])
+                if num_links == 0:
+                    num_links = len(corpus)
+                link_weights.append(page_rank[i]/num_links)
+
+            random_factor = (1-damping_factor)/len(corpus)
+            update[p] = random_factor + damping_factor*sum(link_weights)
+            if abs(page_rank[p]-update[p]) >= 0.001:
                 changed = True
         page_rank = update
 
