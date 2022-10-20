@@ -112,15 +112,16 @@ class CrosswordCreator():
         False if no revision was made.
         """
         revised = False
-        i,j = self.crossword.overlaps[x,y]
-        for var_x in self.domains[x]:
-            not_found = True
-            for var_y in self.domains[y]:
-                if var_y[j] == var_x[i]:
-                    not_found = False
-            if not_found:
-                self.domains[x].remove(var_x)
-                revised = True
+        overlap = self.crossword.overlaps[x,y]
+        if not overlap is None:
+            for var_x in self.domains[x]:
+                not_found = True
+                for var_y in self.domains[y]:
+                    if var_x[overlap[0]] == var_y[overlap[1]]:
+                        not_found = False
+                if not_found:
+                    self.domains[x].remove(var_x)
+                    revised = True
 
         return revised
 
