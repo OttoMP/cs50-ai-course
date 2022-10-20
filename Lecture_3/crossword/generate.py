@@ -115,13 +115,15 @@ class CrosswordCreator():
         overlap = self.crossword.overlaps[x,y]
         if not overlap is None:
             for var_x in self.domains[x]:
+                remove = set()
                 not_found = True
                 for var_y in self.domains[y]:
                     if var_x[overlap[0]] == var_y[overlap[1]]:
                         not_found = False
                 if not_found:
-                    self.domains[x].remove(var_x)
+                    remove.add(var_x)
                     revised = True
+            self.domains[x] = self.domains[x] - remove
 
         return revised
 
@@ -135,7 +137,20 @@ class CrosswordCreator():
         Return True if arc consistency is enforced and no domains are empty;
         return False if one or more domains end up empty.
         """
-        raise NotImplementedError
+        if arcs is None:
+            queue = [arc for arc in self.crossword.overlaps.keys()]
+        else:
+            queue = arcs
+
+        while queue:
+            x,y = queue.pop()
+            if self.revise(x,y):
+                if len(self.domains[x]) == 0:
+                    return False
+                for z in self.crossword.neighbors(x)-{y}:
+                    queue.append((z,x))
+
+        return True
 
     def assignment_complete(self, assignment):
         """
