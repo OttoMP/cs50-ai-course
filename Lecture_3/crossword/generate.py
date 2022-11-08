@@ -127,7 +127,6 @@ class CrosswordCreator():
 
         return revised
 
-
     def ac3(self, arcs=None):
         """
         Update `self.domains` such that each variable is arc consistent.
@@ -189,7 +188,17 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
-        raise NotImplementedError
+        domain = self.domains[var]
+        not_assigned = {(var, value) for (var, value) in assignment.items() if value is None}
+
+        for guess in self.domains[var]:
+            blocked_num = 0
+            for neigh in self.crossword.neighbors(var):
+                available_values = len(self.domains[neigh])
+                if assignment[neigh] is None:
+                    i,j = self.crossword.overlaps(var, neigh)
+                    if assignment[var][i] != assignment[neigh][j]:
+                        return False
 
     def select_unassigned_variable(self, assignment):
         """
