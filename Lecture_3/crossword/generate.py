@@ -136,6 +136,7 @@ class CrosswordCreator():
         Return True if arc consistency is enforced and no domains are empty;
         return False if one or more domains end up empty.
         """
+        print("AC3", arcs)
         if arcs is None:
             queue = [arc for arc in self.crossword.overlaps.keys()]
         else:
@@ -156,8 +157,8 @@ class CrosswordCreator():
         Return True if `assignment` is complete (i.e., assigns a value to each
         crossword variable); return False otherwise.
         """
-        values = {v for v in assignment.values}
-        return None not in values
+        values = {v for v in assignment.values()}
+        return None not in values and len(values) > 0
 
     def consistent(self, assignment):
         """
@@ -175,7 +176,7 @@ class CrosswordCreator():
                 return False
             # Arc consistency
             for neigh in self.crossword.neighbors(var):
-                if assignment[neigh] is not None:
+                if assignment.get(neigh) is not None:
                     i,j = self.crossword.overlaps(var, neigh)
                     if assignment[var][i] != assignment[neigh][j]:
                         return False
@@ -208,7 +209,10 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
-        raise NotImplementedError
+        assigned_vars = {var for var in assignment.keys()}
+        all_vars = {var for var in self.crossword.variables}
+        unassigned_vars = all_vars - assigned_vars
+        return unassigned_vars.pop()
 
     def backtrack(self, assignment):
         """
@@ -219,7 +223,24 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        raise NotImplementedError
+        if self.assignment_complete(assignment):
+            return assignment
+        var = self.select_unassigned_variable(assignment)
+        print(var)
+        print(self.domains[var])
+        for value in self.domains[var]:
+            print("Value", value)
+            assignment[var] = value
+            if self.consistent(assignment):
+                print("Assignment consistent")
+                arcs = [(neigh, var) for neigh in self.crossword.neighbors(var)]
+                self.ac3(arcs = arcs)
+                result = self.backtrack(assignment)
+                if self.assignment_complete(result):
+                    return result
+            del assignment[var]
+            # del inference[var]
+        return None
 
 
 def main():
