@@ -187,17 +187,19 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
-        domain = self.domains[var]
-        not_assigned = {(var, value) for (var, value) in assignment.items() if value is None}
-
+        domain_values = []
         for guess in self.domains[var]:
             blocked_num = 0
             for neigh in self.crossword.neighbors(var):
-                available_values = len(self.domains[neigh])
-                if assignment[neigh] is None:
-                    i,j = self.crossword.overlaps(var, neigh)
-                    if assignment[var][i] != assignment[neigh][j]:
-                        return False
+                i,j = self.crossword.overlaps[var, neigh]
+                for word in self.domains[neigh]:
+                    if neigh not in assignment:
+                        if guess[i] != word[j]:
+                            blocked_num += 1
+            domain_values.append((guess, blocked_num))
+
+        domain_values.sort(key=lambda tup: tup[1])
+        return domain_values
 
     def select_unassigned_variable(self, assignment):
         """
@@ -210,7 +212,9 @@ class CrosswordCreator():
         assigned_vars = {var for var in assignment.keys()}
         all_vars = {var for var in self.crossword.variables}
         unassigned_vars = all_vars - assigned_vars
-        return unassigned_vars.pop()
+        ordered_variables = [(var, len(self.domains[var])) for var in unassigned_vars]
+        ordered_variables.sort(key=lambda tup: tup[1], reverse=True)
+        return ordered_variables.pop()[0]
 
     def backtrack(self, assignment):
         """
@@ -221,17 +225,13 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        print("\nBacktrack", assignment)
         if self.assignment_complete(assignment):
             return assignment
         var = self.select_unassigned_variable(assignment)
-        print(var)
-        print(self.domains[var])
-        for value in self.domains[var]:
-            print("Value", value)
+        ordered_domains = self.order_domain_values(var, assignment)
+        for value, _ in ordered_domains:
             assignment[var] = value
             if self.consistent(assignment):
-                print("Assignment consistent")
                 arcs = [(neigh, var) for neigh in self.crossword.neighbors(var)]
                 self.ac3(arcs = arcs)
                 result = self.backtrack(assignment)
@@ -239,6 +239,7 @@ class CrosswordCreator():
                     return result
             del assignment[var]
             # del inference[var]
+
         return None
 
 
