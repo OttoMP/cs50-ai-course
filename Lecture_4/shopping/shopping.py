@@ -1,11 +1,26 @@
 import csv
 import sys
+import pandas as pd
+from enum import Enum
 
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 
 TEST_SIZE = 0.4
 
+class Month(Enum):
+    Jan = 0
+    Feb = 1
+    Mar = 2
+    Apr = 3
+    May = 4
+    June = 5
+    Jul = 6
+    Aug = 7
+    Sep = 8
+    Oct = 9
+    Nov = 10
+    Dec = 11
 
 def main():
 
@@ -59,15 +74,33 @@ def load_data(filename):
     labels should be the corresponding list of labels, where each label
     is 1 if Revenue is true, and 0 otherwise.
     """
-    raise NotImplementedError
+    # Read CSV file
+    df = pd.read_csv('shopping.csv', sep=',')
+    evidence = df.values.tolist()
+    labels = [int(line.pop()) for line in evidence]
 
+    for line in evidence:
+        line[10] = Month[line[10]].value
+        if line[15] == "Returning_Visitor":
+            line[15] = 1
+        else:
+            line[15] = 0
+        if line[16]:
+            line[16] = 1
+        else:
+            line[16] = 0
+
+    return (evidence, labels)
 
 def train_model(evidence, labels):
     """
     Given a list of evidence lists and a list of labels, return a
     fitted k-nearest neighbor model (k=1) trained on the data.
     """
-    raise NotImplementedError
+    neigh = KNeighborsClassifier(n_neighbors=1)
+    neigh.fit(evidence, labels)
+
+    return neigh
 
 
 def evaluate(labels, predictions):
@@ -85,7 +118,19 @@ def evaluate(labels, predictions):
     representing the "true negative rate": the proportion of
     actual negative labels that were accurately identified.
     """
-    raise NotImplementedError
+    sensitivity = 0
+    specificity = 0
+    total_positive = [value for value in labels if value == 1]
+    total_negative = [value for value in labels if value == 0]
+
+    for label, prediction in zip(labels, predictions):
+        if label == prediction:
+            if label == 1:
+                sensitivity += 1
+            else:
+                specificity += 1
+
+    return (sensitivity/len(total_positive), specificity/len(total_negative))
 
 
 if __name__ == "__main__":
