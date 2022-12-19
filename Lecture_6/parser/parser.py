@@ -1,4 +1,5 @@
 import nltk
+from nltk.tokenize import word_tokenize
 import sys
 
 TERMINALS = """
@@ -62,7 +63,16 @@ def preprocess(sentence):
     and removing any word that does not contain at least one alphabetic
     character.
     """
-    raise NotImplementedError
+
+    punc = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+    for ele in sentence:
+        if ele in punc:
+            sentence = sentence.replace(ele, "")
+
+    processed_sentence = [word.lower() for word in word_tokenize(sentence)]
+    print(processed_sentence)
+
+    return processed_sentence
 
 
 def np_chunk(tree):
