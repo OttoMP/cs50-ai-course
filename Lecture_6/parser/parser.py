@@ -16,8 +16,9 @@ V -> "smiled" | "tell" | "were"
 """
 
 NONTERMINALS = """
-S -> NP | NP V | NP V NP
-NP -> N | Det N
+S -> NP | NP V | NP VP
+NP -> N | Det NP | N NP | P NP
+VP -> V | V NP
 """
 
 grammar = nltk.CFG.fromstring(NONTERMINALS + TERMINALS)
@@ -85,7 +86,7 @@ def np_chunk(tree):
     chunk = []
     for phrase in tree.subtrees():
         if phrase.label() == "NP":
-            inside_tree = [sub.label() for sub in phrase.subtrees(lambda t: t.height() == 2)]
+            inside_tree = [sub.label() for sub in phrase.subtrees()][1:]
             if "NP" not in inside_tree:
                 chunk.append(phrase)
 
