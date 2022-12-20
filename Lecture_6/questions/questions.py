@@ -1,6 +1,8 @@
 import nltk
+from nltk.tokenize import word_tokenize
 import sys
 import os
+import string
 
 FILE_MATCHES = 1
 SENTENCE_MATCHES = 1
@@ -57,8 +59,7 @@ def load_files(directory):
             for line in text:
                 mapping[file] += line
 
-    print(mapping)
-
+    return mapping
 
 def tokenize(document):
     """
@@ -68,7 +69,19 @@ def tokenize(document):
     Process document by coverting all words to lowercase, and removing any
     punctuation or English stopwords.
     """
-    raise NotImplementedError
+    for ele in document:
+        if ele in string.punctuation:
+            document = document.replace(ele, "")
+
+    processed_sentence = [word.lower() for word in word_tokenize(document)]
+
+
+    stopwords = [word.strip() for word in open("stopwords.txt", 'r')]
+    for ele in processed_sentence:
+        if ele in stopwords:
+            processed_sentence.remove(ele)
+
+    return processed_sentence
 
 
 def compute_idfs(documents):
