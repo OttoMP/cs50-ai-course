@@ -2,7 +2,8 @@ import nltk
 from nltk.tokenize import word_tokenize
 import sys
 import os
-import string
+import math
+from pprint import pprint
 
 FILE_MATCHES = 1
 SENTENCE_MATCHES = 1
@@ -55,11 +56,12 @@ def load_files(directory):
     for file in os.listdir(directory):
         if file.endswith(".txt"):
             mapping[file] = ""
-            text = open(os.path.join(directory, file), 'r')
-            for line in text:
-                mapping[file] += line
+            with open(os.path.join(directory, file)) as text:
+                for line in text:
+                    mapping[file] += line
 
     return mapping
+
 
 def tokenize(document):
     """
@@ -69,14 +71,10 @@ def tokenize(document):
     Process document by coverting all words to lowercase, and removing any
     punctuation or English stopwords.
     """
-    for ele in document:
-        if ele in string.punctuation:
-            document = document.replace(ele, "")
-
-    processed_sentence = [word.lower() for word in word_tokenize(document)]
-
 
     stopwords = [word.strip() for word in open("stopwords.txt", 'r')]
+    processed_sentence = [word.lower() for word in word_tokenize(document) if word.isalpha()]
+
     for ele in processed_sentence:
         if ele in stopwords:
             processed_sentence.remove(ele)
@@ -92,8 +90,17 @@ def compute_idfs(documents):
     Any word that appears in at least one of the documents should be in the
     resulting dictionary.
     """
-    raise NotImplementedError
+    words = set()
+    for filename in documents:
+        words.update(documents[filename])
 
+    idfs = dict()
+    for word in words:
+        f = sum([word in documents[filename] for filename in documents])
+        idf = math.log(len(documents) / f)
+        idfs[word] = idf
+
+    return idfs
 
 def top_files(query, files, idfs, n):
     """
@@ -103,6 +110,10 @@ def top_files(query, files, idfs, n):
     files that match the query, ranked according to tf-idf.
     """
     raise NotImplementedError
+    #for filename in files:
+        #idfs[filename].sort(key=lambda tfidf: tfidf[1], reverse = True)
+
+    #return idfs[filename][:n]
 
 
 def top_sentences(query, sentences, idfs, n):

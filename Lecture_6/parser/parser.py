@@ -71,7 +71,7 @@ def preprocess(sentence):
         if ele in punc:
             sentence = sentence.replace(ele, "")
 
-    processed_sentence = [word.lower() for word in word_tokenize(sentence)]
+    processed_sentence = [word.lower() for word in word_tokenize(sentence) if word.isalpha()]
 
     return processed_sentence
 
