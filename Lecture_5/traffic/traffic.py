@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import sys
 import tensorflow as tf
 
@@ -10,6 +11,7 @@ EPOCHS = 10
 IMG_WIDTH = 30
 IMG_HEIGHT = 30
 NUM_CATEGORIES = 43
+#NUM_CATEGORIES = 3
 TEST_SIZE = 0.4
 
 
